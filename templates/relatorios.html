@@ -1,0 +1,90 @@
+<<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios de Ferramentas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light p-4">
+    <div class="container">
+        <h2 class="mb-4">📊 Relatórios de Ferramentas em Uso</h2>
+
+        <!-- Botões de navegação -->
+        <div class="mb-3 d-flex justify-content-between flex-wrap">
+            <div>
+                <a href="/" class="btn btn-secondary me-2 mb-2">🏠 Voltar para Início</a>
+                <a href="/relatorio_estoque" class="btn btn-outline-success mb-2">📦 Ver Relatório de Estoque</a>
+            </div>
+            <div>
+                <form method="get" action="/exportar_excel" class="d-inline">
+                    <input type="hidden" name="ferramenta" value="{{ request.args.get('ferramenta', '') }}">
+                    <input type="hidden" name="tecnico" value="{{ request.args.get('tecnico', '') }}">
+                    <input type="hidden" name="projeto" value="{{ request.args.get('projeto', '') }}">
+                    <button type="submit" class="btn btn-outline-primary mb-2">🔽 Exportar filtro atual para Excel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Formulário de Filtro -->
+        <form method="GET" class="row g-2 mb-4">
+            <div class="col-md-4">
+                <select name="ferramenta" class="form-select">
+                    <option value="">-- Filtrar por Ferramenta --</option>
+                    {% for nome in nomes_ferramentas %}
+                        <option value="{{ nome }}" {% if request.args.get('ferramenta') == nome %}selected{% endif %}>{{ nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select name="tecnico" class="form-select">
+                    <option value="">-- Filtrar por Técnico --</option>
+                    {% for tecnico in tecnicos %}
+                        <option value="{{ tecnico }}" {% if request.args.get('tecnico') == tecnico %}selected{% endif %}>{{ tecnico }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select name="projeto" class="form-select">
+                    <option value="">-- Filtrar por Projeto --</option>
+                    {% for projeto in locais %}
+                        <option value="{{ projeto }}" {% if request.args.get('projeto') == projeto %}selected{% endif %}>{{ projeto }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100">🔍 Filtrar</button>
+            </div>
+        </form>
+
+        <!-- Tabela de Resultados -->
+        {% if ferramentas %}
+        <table class="table table-bordered table-hover">
+            <thead class="table-info">
+                <tr>
+                    <th>Nome</th>
+                    <th>Quantidade</th>
+                    <th>Status</th>
+                    <th>Projeto</th>
+                    <th>Técnico</th>
+                    <th>IDGEO</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in ferramentas %}
+                <tr>
+                    <td>{{ f[0] }}</td>
+                    <td>{{ f[1] }}</td>
+                    <td>{{ f[2] }}</td>
+                    <td>{{ f[3] or '-' }}</td>
+                    <td>{{ f[4] or '-' }}</td>
+                    <td>{{ f[5] or '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <div class="alert alert-warning">Nenhum resultado encontrado para o filtro atual.</div>
+        {% endif %}
+    </div>
+</body>
+</html>
